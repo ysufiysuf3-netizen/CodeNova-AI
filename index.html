@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CodeNova — AI Development Studio</title>
+  <meta
+    name="description"
+    content="CodeNova — AI-powered development studio with modern code editor, project explorer and AI tools."
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #050713;
+      --panel: #0c122a;
+      --panel2: #111834;
+      --border: rgba(120, 110, 255, 0.2);
+      --text: #f5f7ff;
+      --muted: #94a3c7;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(
+          circle at 15% 20%,
+          rgba(66, 133, 255, 0.13),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 85% 15%,
+          rgba(139, 92, 246, 0.14),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 50% 100%,
+          rgba(217, 70, 239, 0.08),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #040611,
+          #080c1b 45%,
+          #060816
+        );
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    /* =========================
+       MOUSE GLOW
+    ========================= */
+
+    #mouseGlow {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+
+      width: 240px;
+      height: 240px;
+
+      border-radius: 50%;
+
+      pointer-events: none;
+
+      z-index: 9999;
+
+      transform: translate(-50%, -50%);
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(66, 133, 255, 0.3) 0%,
+          rgba(139, 92, 246, 0.22) 30%,
+          rgba(217, 70, 239, 0.1) 48%,
+          transparent 72%
+        );
+
+      filter: blur(12px);
+
+      transition:
+        left 0.07s ease-out,
+        top 0.07s ease-out;
+    }
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .btn {
+      min-height: 42px;
+      padding: 0 15px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 8px;
+
+      border-radius: 12px;
+
+      color: white;
+      cursor: pointer;
+
+      font-weight: 700;
+
+      background:
+        linear-gradient(
+          135deg,
+          #2f74ff,
+          #6948ef 70%,
+          #8b5cf6
+        );
+
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      box-shadow:
+        0 8px 22px rgba(53, 93, 255, 0.23);
+
+      transition:
+        transform 0.2s ease,
+        filter 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      filter: brightness(1.1);
+
+      box-shadow:
+        0 12px 30px
+        rgba(82, 76, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.97);
+    }
+
+    .btn.small {
+      min-height: 36px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+
+    .btn.secondary {
+      background:
+        linear-gradient(
+          135deg,
+          #161f42,
+          #24235a
+        );
+    }
+
+    .btn.green {
+      background:
+        linear-gradient(
+          135deg,
+          #16a34a,
+          #22c55e
+        );
+    }
+
+    .icon-badge {
+      width: 34px;
+      height: 34px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(71, 129, 255, 0.25),
+          rgba(139, 92, 246, 0.26)
+        );
+
+      border:
+        1px solid
+        rgba(137, 121, 255, 0.22);
+
+      box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.1),
+
+        0 5px 18px
+        rgba(65, 80, 255, 0.18);
+
+      font-size: 17px;
+    }
+
+    /* =========================
+       START
+    ========================= */
+
+    .start-screen {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px;
+    }
+
+    .start-box {
+      width: min(920px, 100%);
+
+      padding: 48px;
+
+      border: 1px solid var(--border);
+      border-radius: 28px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(15, 21, 48, 0.97),
+          rgba(8, 12, 30, 0.95)
+        );
+
+      box-shadow:
+        0 0 90px
+        rgba(66, 133, 255, 0.12),
+
+        0 20px 50px
+        rgba(0, 0, 0, 0.35);
+
+      text-align: center;
+    }
+
+    .logo-big {
+      font-size:
+        clamp(42px, 8vw, 78px);
+
+      font-weight: 900;
+
+      letter-spacing: 4px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #3b82f6,
+          #8b5cf6,
+          #d946ef
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      color: transparent;
+
+      background-size: 200% 200%;
+
+      animation:
+        gradientMove 5s linear infinite;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0 50%;
+      }
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: #b8c2e6;
+      font-size: 18px;
+    }
+
+    .start-buttons {
+      margin-top: 35px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 16px;
+    }
+
+    /* =========================
+       IDE
+    ========================= */
+
+    .ide {
+      display: none;
+
+      width: 100%;
+      height: 100%;
+
+      flex-direction: column;
+    }
+
+    .topbar {
+      height: 62px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 14px;
+
+      background:
+        rgba(8, 12, 29, 0.92);
+
+      border-bottom:
+        1px solid var(--border);
+
+      flex-shrink: 0;
+    }
+
+    .top-left,
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand {
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      margin-right: 8px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #4b8cff,
+          #a35cff
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      color: transparent;
+    }
+
+    .project-name {
+      color: #aeb9dc;
+      font-size: 13px;
+    }
+
+    .timer {
+      min-width: 86px;
+
+      text-align: center;
+
+      padding: 9px 14px;
+
+      border-radius: 11px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #121b3a,
+          #1f1947
+        );
+
+      border:
+        1px solid
+        rgba(139, 92, 246, 0.25);
+
+      color: #dbe5ff;
+
+      font-weight: 800;
+    }
+
+    /* =========================
+       LANGUAGES NEAR SAVE
+    ========================= */
+
+    .languages-inline {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-btn {
+      width: 38px;
+      height: 34px;
+
+      border-radius: 9px;
+
+      cursor: pointer;
+
+      color: #aeb9dc;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0e1531,
+          #19173e
+        );
+
+      border:
+        1px solid
+        rgba(120, 110, 255, 0.2);
+
+      font-size: 11px;
+      font-weight: 800;
+
+      transition: 0.2s;
+    }
+
+    .lang-btn:hover {
+      color: white;
+
+      transform:
+        translateY(-2px);
+
+      box-shadow:
+        0 7px 18px
+        rgba(66, 133, 255, 0.25);
+    }
+
+    .lang-btn.active {
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #2864f5,
+          #7548ed
+        );
+
+      box-shadow:
+        0 7px 18px
+        rgba(66, 100, 255, 0.3);
+    }
+
+    /* =========================
+       WORKSPACE
+    ========================= */
+
+    .workspace {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .activity {
+      width: 64px;
+
+      background:
+        rgba(5, 9, 22, 0.95);
+
+      border-right:
+        1px solid var(--border);
+
+      padding:
+        11px 8px;
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      align-items:
+        center;
+
+      gap:
+        10px;
+    }
+
+    .activity-btn {
+      width: 46px;
+      height: 46px;
+
+      border-radius: 13px;
+
+      cursor: pointer;
+
+      color: #aeb9dc;
+
+      background:
+        linear-gradient(
+          145deg,
+          #10172f,
+          #161e3e
+        );
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
+      transition: 0.2s;
+    }
+
+    .activity-btn:hover,
+    .activity-btn.active {
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #285ff4,
+          #7349ed
+        );
+
+      box-shadow:
+        0 8px 20px
+        rgba(65, 91, 255, 0.28);
+
+      transform:
+        translateY(-2px);
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+      width: 300px;
+
+      background:
+        rgba(9, 14, 31, 0.94);
+
+      border-right:
+        1px solid var(--border);
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      min-height:
+        0;
+    }
+
+    .sidebar-head {
+      padding: 14px;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .sidebar-title {
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      margin-bottom:
+        12px;
+
+      font-weight:
+        800;
+    }
+
+    .sidebar-actions {
+      display:
+        flex;
+
+      gap:
+        8px;
+    }
+
+    .sidebar-actions .btn {
+      flex:
+        1;
+    }
+
+    .search-box {
+      width: 100%;
+      height: 40px;
+
+      margin-top: 10px;
+
+      padding: 0 13px;
+
+      border-radius: 11px;
+
+      border:
+        1px solid
+        rgba(120, 110, 255, 0.18);
+
+      outline: none;
+
+      background: #0a1128;
+
+      color: white;
+    }
+
+    .search-box:focus,
+    .field:focus,
+    .ai-input:focus,
+    .editor:focus {
+      border-color:
+        rgba(92, 126, 255, 0.7);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(66, 133, 255, 0.1);
+    }
+
+    .explorer {
+      flex: 1;
+
+      overflow: auto;
+
+      padding: 10px;
+    }
+
+    .tree-item {
+      display: flex;
+      align-items: center;
+
+      gap: 8px;
+
+      padding: 8px 10px;
+      margin: 3px 0;
+
+      border-radius: 10px;
+
+      cursor: pointer;
+
+      color: #ccd5ef;
+
+      transition: 0.15s;
+
+      user-select: none;
+    }
+
+    .tree-item:hover {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(66, 133, 255, 0.12),
+          rgba(139, 92, 246, 0.12)
+        );
+
+      color: white;
+    }
+
+    .tree-item.file.active {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(61, 104, 255, 0.22),
+          rgba(139, 92, 246, 0.16)
+        );
+
+      color: white;
+    }
+
+    /* =========================
+       CENTER
+    ========================= */
+
+    .center {
+      flex: 1;
+
+      min-width: 0;
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      background:
+        #080c1a;
+    }
+
+    .tabs {
+      height: 43px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      background:
+        #0a1022;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .tab {
+      height: 43px;
+
+      padding:
+        0 15px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap: 9px;
+
+      border-right:
+        1px solid var(--border);
+
+      color:
+        #8e9abf;
+
+      font-size:
+        13px;
+    }
+
+    .tab.active {
+      color: white;
+
+      background:
+        rgba(46, 83, 190, 0.18);
+    }
+
+    .editor-wrap {
+      display: flex;
+
+      flex: 1;
+
+      min-height: 0;
+
+      overflow: hidden;
+    }
+
+    .line-numbers {
+      width: 58px;
+
+      padding:
+        16px 10px;
+
+      background:
+        #080d1c;
+
+      border-right:
+        1px solid
+        rgba(120, 110, 255, 0.12);
+
+      color:
+        #4f5f83;
+
+      text-align:
+        right;
+
+      font:
+        14px/1.8 Consolas, monospace;
+
+      overflow:
+        hidden;
+
+      user-select:
+        none;
+    }
+
+    .editor {
+      flex: 1;
+
+      border: none;
+      outline: none;
+      resize: none;
+
+      background:
+        #080c18;
+
+      color:
+        #e7edff;
+
+      padding:
+        16px;
+
+      font:
+        14px/1.8 Consolas, monospace;
+
+      white-space:
+        pre;
+
+      overflow:
+        auto;
+    }
+
+    /* =========================
+       BOTTOM
+    ========================= */
+
+    .bottom {
+      height: 190px;
+
+      border-top:
+        1px solid var(--border);
+
+      background:
+        #070b18;
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      flex-shrink:
+        0;
+    }
+
+    .bottom-tabs {
+      height: 42px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap: 5px;
+
+      padding:
+        0 10px;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .bottom-tab {
+      padding:
+        8px 14px;
+
+      border-radius:
+        9px;
+
+      cursor:
+        pointer;
+
+      color:
+        #8d98b9;
+
+      font-size:
+        12px;
+
+      transition:
+        0.18s;
+    }
+
+    .bottom-tab:hover,
+    .bottom-tab.active {
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(48,93,216,0.2),
+          rgba(114,63,201,0.18)
+        );
+    }
+
+    .output {
+      flex: 1;
+
+      overflow: auto;
+
+      padding:
+        10px 13px;
+
+      font:
+        12px/1.7 Consolas, monospace;
+
+      color:
+        #9eb0d8;
+    }
+
+    .log-line {
+      margin-bottom: 2px;
+    }
+
+    .log-ok {
+      color:
+        #4ade80;
+    }
+
+    .log-info {
+      color:
+        #7eb5ff;
+    }
+
+    .log-error {
+      color:
+        #ff7b7b;
+    }
+
+    .terminal-input-wrap {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        8px;
+
+      padding:
+        8px 12px;
+
+      border-top:
+        1px solid
+        rgba(120,110,255,0.1);
+    }
+
+    .terminal-prefix {
+      color:
+        #64d68a;
+
+      font-family:
+        Consolas, monospace;
+    }
+
+    .terminal-input {
+      flex: 1;
+
+      height: 34px;
+
+      border:
+        none;
+
+      outline:
+        none;
+
+      background:
+        transparent;
+
+      color:
+        #dbe5ff;
+
+      font:
+        12px Consolas, monospace;
+    }
+
+    .problem-item {
+      display:
+        flex;
+
+      gap:
+        9px;
+
+      padding:
+        8px 4px;
+
+      color:
+        #ffb2b2;
+
+      font-size:
+        12px;
+    }
+
+    .statusbar {
+      height:
+        28px;
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      padding:
+        0 12px;
+
+      color:
+        #a7b4d6;
+
+      background:
+        linear-gradient(
+          90deg,
+          #1a2460,
+          #2e1d67
+        );
+
+      font-size:
+        12px;
+    }
+
+    /* =========================
+       AI
+    ========================= */
+
+    .ai-panel {
+      width:
+        340px;
+
+      display:
+        none;
+
+      flex-direction:
+        column;
+
+      background:
+        rgba(9,14,33,0.96);
+
+      border-left:
+        1px solid var(--border);
+
+      min-height:
+        0;
+    }
+
+    .ai-panel.open {
+      display:
+        flex;
+    }
+
+    .ai-head {
+      height:
+        56px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      padding:
+        0 14px;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .ai-body {
+      flex:
+        1;
+
+      padding:
+        14px;
+
+      overflow:
+        auto;
+    }
+
+    .ai-message {
+      padding:
+        13px;
+
+      border-radius:
+        13px;
+
+      margin-bottom:
+        12px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #182146,
+          #131634
+        );
+
+      border:
+        1px solid
+        rgba(120,110,255,0.12);
+
+      color:
+        #d9e1fa;
+
+      font-size:
+        13px;
+
+      line-height:
+        1.6;
+    }
+
+    .ai-bottom {
+      padding:
+        12px;
+
+      border-top:
+        1px solid var(--border);
+    }
+
+    .ai-input {
+      width: 100%;
+      height: 94px;
+
+      resize: none;
+
+      padding: 12px;
+
+      border-radius: 13px;
+
+      outline: none;
+
+      border:
+        1px solid
+        rgba(120,110,255,0.18);
+
+      background:
+        #080e24;
+
+      color:
+        white;
+    }
+
+    .ai-send {
+      width:
+        100%;
+
+      margin-top:
+        9px;
+    }
+
+    /* =========================
+       MODALS
+    ========================= */
+
+    .modal-bg {
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      display:
+        none;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      padding:
+        20px;
+
+      z-index:
+        11000;
+
+      background:
+        rgba(1,4,12,0.7);
+
+      backdrop-filter:
+        blur(10px);
+    }
+
+    .modal-bg.show {
+      display:
+        flex;
+    }
+
+    .modal {
+      width:
+        min(520px,100%);
+
+      padding:
+        25px;
+
+      border-radius:
+        20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #111a39,
+          #0b1026
+        );
+
+      border:
+        1px solid
+        rgba(125,108,255,0.24);
+
+      box-shadow:
+        0 25px 80px
+        rgba(0,0,0,0.55);
+    }
+
+    .modal h2 {
+      margin-bottom:
+        18px;
+
+      font-size:
+        22px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        9px;
+    }
+
+    .modal p {
+      color:
+        #aeb9d8;
+
+      line-height:
+        1.6;
+
+      font-size:
+        14px;
+    }
+
+    .field {
+      width:
+        100%;
+
+      height:
+        46px;
+
+      margin-top:
+        11px;
+
+      padding:
+        0 13px;
+
+      border-radius:
+        11px;
+
+      outline:
+        none;
+
+      color:
+        white;
+
+      border:
+        1px solid
+        rgba(120,110,255,0.18);
+
+      background:
+        #090f25;
+    }
+
+    .modal-actions {
+      display:
+        flex;
+
+      gap:
+        9px;
+
+      margin-top:
+        18px;
+    }
+
+    .modal-actions .btn {
+      flex:
+        1;
+    }
+
+    /* =========================
+       PLANS
+    ========================= */
+
+    .plans {
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap:
+        12px;
+
+      margin-top:
+        16px;
+    }
+
+    .plan {
+      padding:
+        17px;
+
+      border-radius:
+        15px;
+
+      border:
+        1px solid
+        rgba(120,110,255,0.18);
+
+      background:
+        linear-gradient(
+          145deg,
+          #0d1530,
+          #15153a
+        );
+
+      cursor:
+        pointer;
+
+      transition:
+        0.18s;
+    }
+
+    .plan:hover {
+      transform:
+        translateY(-3px);
+
+      border-color:
+        rgba(116,92,255,0.45);
+    }
+
+    .plan.selected {
+      border-color:
+        #7270ff;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(45,91,214,0.28),
+          rgba(117,59,193,0.25)
+        );
+    }
+
+    .plan-title {
+      font-weight:
+        800;
+
+      font-size:
+        15px;
+    }
+
+    .plan-price {
+      font-size:
+        25px;
+
+      font-weight:
+        900;
+
+      margin-top:
+        7px;
+    }
+
+    .plan-note {
+      color:
+        #8f9bbd;
+
+      font-size:
+        12px;
+
+      margin-top:
+        5px;
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast {
+      position:
+        fixed;
+
+      right:
+        22px;
+
+      bottom:
+        22px;
+
+      min-width:
+        260px;
+
+      padding:
+        13px 16px;
+
+      border-radius:
+        13px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #111a38,
+          #1e1743
+        );
+
+      border:
+        1px solid
+        rgba(120,110,255,0.22);
+
+      color:
+        white;
+
+      box-shadow:
+        0 20px 50px
+        rgba(0,0,0,0.35);
+
+      opacity:
+        0;
+
+      transform:
+        translateY(15px);
+
+      pointer-events:
+        none;
+
+      transition:
+        0.25s;
+
+      z-index:
+        12000;
+    }
+
+    .toast.show {
+      opacity:
+        1;
+
+      transform:
+        translateY(0);
+    }
+
+    @media (max-width: 850px) {
+
+      .start-buttons {
+        grid-template-columns:
+          1fr;
+      }
+
+      .sidebar {
+        width:
+          230px;
+      }
+
+      .ai-panel {
+        display:
+          none !important;
+      }
+
+      .top-right {
+        gap: 5px;
+      }
+
+      .languages-inline {
+        gap: 3px;
+      }
+
+      .lang-btn {
+        width: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- MOUSE GLOW -->
+  <div id="mouseGlow"></div>
+
+  <!-- START SCREEN -->
+  <section
+    id="startScreen"
+    class="start-screen"
+  >
+
+    <div class="start-box">
+
+      <div class="logo-big">
+        CODENOVA
+      </div>
+
+      <div
+        class="subtitle"
+        data-i18n="subtitle"
+      >
+        Студияи барномасозии бо AI
+      </div>
+
+      <div class="start-buttons">
+
+        <button
+          class="btn"
+          onclick="openProjectFolder()"
+        >
+          <span class="icon-badge">📁</span>
+
+          <span data-i18n="openFolder">
+            Кушодани папка
+          </span>
+        </button>
+
+        <button
+          class="btn"
+          onclick="showGithubModal()"
+        >
+          <span class="icon-badge">🐙</span>
+
+          <span data-i18n="cloneGithub">
+            Clone GitHub
+          </span>
+        </button>
+
+        <button
+          class="btn"
+          onclick="showSSHInfo()"
+        >
+          <span class="icon-badge">🔐</span>
+
+          <span data-i18n="ssh">
+            Пайвастшавӣ тавассути SSH
+          </span>
+        </button>
+
+      </div>
+
+      <div
+        style="
+          margin-top:20px;
+          color:#7f8caf;
+          font-size:13px;
+        "
+        data-i18n="modernWorkspace"
+      >
+        Муҳити муосири барномасозӣ
+      </div>
+
+    </div>
+  </section>
+
+  <!-- IDE -->
+  <section
+    id="ide"
+    class="ide"
+  >
+
+    <div class="topbar">
+
+      <div class="top-left">
+
+        <div class="brand">
+          CODENOVA
+        </div>
+
+        <div
+          class="project-name"
+          id="projectName"
+        >
+          No project
+        </div>
+
+      </div>
+
+      <div class="top-right">
+
+        <div
+          class="timer"
+          id="timer"
+        >
+          20:00
+        </div>
+
+        <!-- LANGUAGE BUTTONS ARE HERE -->
+        <div class="languages-inline">
+
+          <button
+            id="langTG"
+            class="lang-btn active"
+            onclick="setLanguage('tg')"
+          >
+            TJ
+          </button>
+
+          <button
+            id="langRU"
+            class="lang-btn"
+            onclick="setLanguage('ru')"
+          >
+            RU
+          </button>
+
+          <button
+            id="langEN"
+            class="lang-btn"
+            onclick="setLanguage('en')"
+          >
+            EN
+          </button>
+
+        </div>
+
+        <button
+          class="btn small"
+          onclick="openRegister()"
+        >
+          👤
+          <span data-i18n="register">
+            Сабтином
+          </span>
+        </button>
+
+        <button
+          class="btn small"
+          onclick="saveCurrentFile()"
+        >
+          💾
+          <span data-i18n="save">
+            Захира
+          </span>
+        </button>
+
+        <button
+          class="btn small secondary"
+          onclick="toggleAI()"
+        >
+          ✨ AI
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="workspace">
+
+      <!-- ACTIVITY -->
+      <aside class="activity">
+
+        <button
+          class="activity-btn active"
+          onclick="focusExplorer()"
+          title="Explorer"
+        >
+          📁
+        </button>
+
+        <button
+          id="activityAI"
+          class="activity-btn"
+          onclick="toggleAI()"
+          title="AI"
+        >
+          ✨
+        </button>
+
+      </aside>
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+
+        <div class="sidebar-head">
+
+          <div class="sidebar-title">
+
+            <span data-i18n="explorer">
+              EXPLORER
+            </span>
+
+            <span
+              style="
+                color:#7180a7;
+                font-size:11px;
+              "
+            >
+              CODE
+            </span>
+
+          </div>
+
+          <div class="sidebar-actions">
+
+            <button
+              class="btn small"
+              onclick="createNewFile()"
+            >
+              ＋
+              <span data-i18n="file">
+                File
+              </span>
+            </button>
+
+            <button
+              class="btn small secondary"
+              onclick="createNewFolder()"
+            >
+              ＋
+              <span data-i18n="folder">
+                Folder
+              </span>
+            </button>
+
+          </div>
+
+          <input
+            id="searchInput"
+            class="search-box"
+            data-placeholder="search"
+            placeholder="🔎 Ҷустуҷӯ..."
+            oninput="filterFiles()"
+          >
+
+        </div>
+
+        <div
+          id="explorer"
+          class="explorer"
+        >
+
+          <div
+            style="
+              padding:18px;
+              color:#7684aa;
+              font-size:13px;
+            "
+            data-i18n="openProject"
+          >
+            Папкаро кушо...
+          </div>
+
+        </div>
+
+      </aside>
+
+      <!-- CENTER -->
+      <main class="center">
+
+        <div
+          id="tabs"
+          class="tabs"
+        >
+
+          <div class="tab active">
+
+            📄
+
+            <span data-i18n="noFile">
+              Файл кушода нест
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="editor-wrap">
+
+          <div
+            id="lineNumbers"
+            class="line-numbers"
+          >
+            1
+          </div>
+
+          <textarea
+            id="editor"
+            class="editor"
+            spellcheck="false"
+            data-placeholder="editor"
+            placeholder="// Файлро аз Explorer интихоб кун..."
+            oninput="updateLineNumbers()"
+            onscroll="syncScroll()"
+          ></textarea>
+
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="bottom">
+
+          <div class="bottom-tabs">
+
+            <div
+              id="tabOutput"
+              class="bottom-tab active"
+              onclick="switchBottom('output')"
+            >
+              🟢 OUTPUT
+            </div>
+
+            <div
+              id="tabTerminal"
+              class="bottom-tab"
+              onclick="switchBottom('terminal')"
+            >
+              💻 TERMINAL
+            </div>
+
+            <div
+              id="tabProblems"
+              class="bottom-tab"
+              onclick="switchBottom('problems')"
+            >
+              ⚠️
+              <span data-i18n="problems">
+                PROBLEMS
+              </span>
+            </div>
+
+            <button
+              class="btn small secondary"
+              style="margin-left:auto"
+              onclick="clearOutput()"
+            >
+              🧹
+              <span data-i18n="clear">
+                Тоза кардан
+              </span>
+            </button>
+
+          </div>
+
+          <div
+            id="outputPanel"
+            class="output"
+          >
+            <div id="output"></div>
+          </div>
+
+          <div
+            id="terminalPanel"
+            class="output"
+            style="display:none"
+          >
+
+            <div id="terminalOutput"></div>
+
+            <div class="terminal-input-wrap">
+
+              <span class="terminal-prefix">
+                CodeNova&gt;
+              </span>
+
+              <input
+                id="terminalInput"
+                class="terminal-input"
+                data-placeholder="command"
+                placeholder="command..."
+                autocomplete="off"
+              >
+
+            </div>
+
+          </div>
+
+          <div
+            id="problemsPanel"
+            class="output"
+            style="display:none"
+          >
+
+            <div id="problemsList">
+
+              <div
+                class="problem-item"
+                style="color:#7f8caf"
+              >
+                ✅
+
+                <span data-i18n="noProblems">
+                  Мушкилот ёфт нашуд
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="statusbar">
+
+          <span id="cursorInfo">
+            Ln 1, Col 1
+          </span>
+
+          <span>
+            UTF-8
+          </span>
+
+          <span>
+            CodeNova
+          </span>
+
+        </div>
+
+      </main>
+
+      <!-- AI -->
+      <aside
+        id="aiPanel"
+        class="ai-panel"
+      >
+
+        <div class="ai-head">
+
+          <strong data-i18n="aiAssistant">
+            AI Assistant
+          </strong>
+
+          <button
+            class="btn small secondary"
+            onclick="toggleAI()"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        <div class="ai-body">
+
+          <div class="ai-message">
+
+            🤖
+
+            <span data-i18n="aiText">
+              Ман метавонам ба ту дар код,
+              интерфейс ва проект кӯмак кунам.
+            </span>
+
+          </div>
+
+          <div class="ai-message">
+
+            💎
+
+            <span data-i18n="subscriptionText">
+              Барои истифодаи AI аввал
+              subscription интихоб кун.
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="ai-bottom">
+
+          <textarea
+            id="aiInput"
+            class="ai-input"
+            data-placeholder="askAIInput"
+            placeholder="Аз AI пурс..."
+          ></textarea>
+
+          <button
+            class="btn ai-send"
+            onclick="sendAI()"
+          >
+            ✨
+
+            <span data-i18n="askAI">
+              Аз AI пурс
+            </span>
+
+          </button>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </section>
+
+  <!-- GENERAL MODAL -->
+  <div
+    id="modalBg"
+    class="modal-bg"
+  >
+
+    <div class="modal">
+
+      <h2 id="modalTitle">
+        CodeNova
+      </h2>
+
+      <p id="modalText"></p>
+
+      <input
+        id="modalInput1"
+        class="field"
+        placeholder="Owner"
+      >
+
+      <input
+        id="modalInput2"
+        class="field"
+        placeholder="Repository"
+      >
+
+      <div class="modal-actions">
+
+        <button
+          class="btn secondary"
+          onclick="closeModal()"
+        >
+          ✕
+          <span data-i18n="close">
+            Пӯшидан
+          </span>
+        </button>
+
+        <button
+          id="modalPrimary"
+          class="btn"
+          onclick="connectGithub()"
+        >
+          🚀 Continue
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- REGISTER -->
+  <div
+    id="registerBg"
+    class="modal-bg"
+  >
+
+    <div class="modal">
+
+      <h2>
+
+        <span class="icon-badge">
+          👤
+        </span>
+
+        <span data-i18n="createAccount">
+          Сохтани аккаунт
+        </span>
+
+      </h2>
+
+      <input
+        id="registerName"
+        class="field"
+        data-placeholder="fullName"
+        placeholder="Номи пурра"
+      >
+
+      <input
+        id="registerEmail"
+        class="field"
+        type="email"
+        placeholder="Email"
+      >
+
+      <input
+        id="registerPassword"
+        class="field"
+        type="password"
+        data-placeholder="password"
+        placeholder="Парол"
+      >
+
+      <div class="modal-actions">
+
+        <button
+          class="btn secondary"
+          onclick="closeRegister()"
+        >
+          ✕
+          <span data-i18n="cancel">
+            Бекор кардан
+          </span>
+        </button>
+
+        <button
+          class="btn"
+          onclick="createAccount()"
+        >
+          ✅
+          <span data-i18n="create">
+            Сохтани аккаунт
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SUBSCRIPTION -->
+  <div
+    id="subscriptionBg"
+    class="modal-bg"
+  >
+
+    <div class="modal">
+
+      <h2>
+
+        <span class="icon-badge">
+          💳
+        </span>
+
+        <span data-i18n="chooseSubscription">
+          Интихоби обуна
+        </span>
+
+      </h2>
+
+      <p data-i18n="choosePlan">
+        Барои истифодаи пурраи CodeNova яке
+        аз планҳоро интихоб кун.
+      </p>
+
+      <div class="plans">
+
+        <div
+          class="plan"
+          onclick="selectPlan(this,'10 рӯз','$5')"
+        >
+          <div
+            class="plan-title"
+            data-i18n="days10"
+          >
+            10 рӯз
+          </div>
+
+          <div class="plan-price">
+            $5
+          </div>
+
+          <div class="plan-note">
+            Starter
+          </div>
+        </div>
+
+        <div
+          class="plan"
+          onclick="selectPlan(this,'30 рӯз','$20')"
+        >
+          <div
+            class="plan-title"
+            data-i18n="days30"
+          >
+            30 рӯз
+          </div>
+
+          <div class="plan-price">
+            $20
+          </div>
+
+          <div class="plan-note">
+            Popular
+          </div>
+        </div>
+
+        <div
+          class="plan"
+          onclick="selectPlan(this,'6 моҳ','$90')"
+        >
+          <div
+            class="plan-title"
+            data-i18n="months6"
+          >
+            6 моҳ
+          </div>
+
+          <div class="plan-price">
+            $90
+          </div>
+
+          <div class="plan-note">
+            Pro
+          </div>
+        </div>
+
+        <div
+          class="plan"
+          onclick="selectPlan(this,'1 сол','$150')"
+        >
+          <div
+            class="plan-title"
+            data-i18n="year1"
+          >
+            1 сол
+          </div>
+
+          <div class="plan-price">
+            $150
+          </div>
+
+          <div class="plan-note">
+            Best Value
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+
+        <button
+          class="btn secondary"
+          onclick="closeSubscription()"
+        >
+          ✕
+          <span data-i18n="cancel">
+            Бекор кардан
+          </span>
+        </button>
+
+        <button
+          class="btn green"
+          onclick="paySelectedPlan()"
+        >
+          💳
+          <span data-i18n="payment">
+            Оплата
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
+  <script>
+    /* =========================
+       TRANSLATIONS
+    ========================= */
+
+    const translations = {
+      tg: {
+        subtitle: "Студияи барномасозии бо AI",
+        openFolder: "Кушодани папка",
+        cloneGithub: "Clone GitHub",
+        ssh: "Пайвастшавӣ тавассути SSH",
+        modernWorkspace: "Муҳити муосири барномасозӣ",
+        register: "Сабтином",
+        save: "Захира",
+        explorer: "EXPLORER",
+        file: "Файл",
+        folder: "Папка",
+        search: "🔎 Ҷустуҷӯ...",
+        openProject: "Папкаро кушо...",
+        noFile: "Файл кушода нест",
+        problems: "PROBLEMS",
+        clear: "Тоза кардан",
+        noProblems: "Мушкилот ёфт нашуд",
+        aiAssistant: "AI Assistant",
+        aiText:
+          "Ман метавонам ба ту дар код, интерфейс ва проект кӯмак кунам.",
+        subscriptionText:
+          "Барои истифодаи AI аввал subscription интихоб кун.",
+        askAI: "Аз AI пурс",
+        askAIInput: "Аз AI пурс...",
+        close: "Пӯшидан",
+        createAccount: "Сохтани аккаунт",
+        fullName: "Номи пурра",
+        password: "Парол",
+        cancel: "Бекор кардан",
+        create: "Сохтани аккаунт",
+        chooseSubscription: "Интихоби обуна",
+        choosePlan:
+          "Барои истифодаи пурраи CodeNova яке аз планҳоро интихоб кун.",
+        days10: "10 рӯз",
+        days30: "30 рӯз",
+        months6: "6 моҳ",
+        year1: "1 сол",
+        payment: "Оплата",
+        editor: "// Файлро аз Explorer интихоб кун...",
+        command: "command..."
+      },
+
+      ru: {
+        subtitle: "Студия разработки с искусственным интеллектом",
+        openFolder: "Открыть папку",
+        cloneGithub: "Clone GitHub",
+        ssh: "Подключение через SSH",
+        modernWorkspace: "Современная среда разработки",
+        register: "Регистрация",
+        save: "Сохранить",
+        explorer: "ПРОВОДНИК",
+        file: "Файл",
+        folder: "Папка",
+        search: "🔎 Поиск...",
+        openProject: "Откройте папку...",
+        noFile: "Файл не открыт",
+        problems: "ПРОБЛЕМЫ",
+        clear: "Очистить",
+        noProblems: "Проблем не обнаружено",
+        aiAssistant: "AI Ассистент",
+        aiText:
+          "Я могу помочь тебе с кодом, интерфейсом и проектом.",
+        subscriptionText:
+          "Для использования AI сначала выберите подписку.",
+        askAI: "Спросить AI",
+        askAIInput: "Спросить AI...",
+        close: "Закрыть",
+        createAccount: "Создать аккаунт",
+        fullName: "Полное имя",
+        password: "Пароль",
+        cancel: "Отмена",
+        create: "Создать аккаунт",
+        chooseSubscription: "Выберите подписку",
+        choosePlan:
+          "Для полного использования CodeNova выберите один из планов.",
+        days10: "10 дней",
+        days30: "30 дней",
+        months6: "6 месяцев",
+        year1: "1 год",
+        payment: "Оплата",
+        editor: "// Выберите файл из Explorer...",
+        command: "команда..."
+      },
+
+      en: {
+        subtitle: "AI-Powered Development Studio",
+        openFolder: "Open Project Folder",
+        cloneGithub: "Clone GitHub",
+        ssh: "Connect via SSH",
+        modernWorkspace: "Modern coding workspace",
+        register: "Register",
+        save: "Save",
+        explorer: "EXPLORER",
+        file: "File",
+        folder: "Folder",
+        search: "🔎 Search...",
+        openProject: "Open project folder...",
+        noFile: "No file open",
+        problems: "PROBLEMS",
+        clear: "Clear",
+        noProblems: "No problems detected",
+        aiAssistant: "AI Assistant",
+        aiText:
+          "I can help you with code, interface and your project.",
+        subscriptionText:
+          "Choose a subscription to use AI.",
+        askAI: "Ask AI",
+        askAIInput: "Ask AI...",
+        close: "Close",
+        createAccount: "Create Account",
+        fullName: "Full name",
+        password: "Password",
+        cancel: "Cancel",
+        create: "Create Account",
+        chooseSubscription: "Choose Subscription",
+        choosePlan:
+          "Choose a plan for full CodeNova access.",
+        days10: "10 days",
+        days30: "30 days",
+        months6: "6 months",
+        year1: "1 year",
+        payment: "Payment",
+        editor: "// Select a file from Explorer...",
+        command: "command..."
+      }
+    };
+
+    let currentLanguage = "tg";
+
+    /* =========================
+       STATE
+    ========================= */
+
+    let projectHandle = null;
+    let currentFileHandle = null;
+    let selectedPlan = null;
+    let timerInterval = null;
+
+    /* =========================
+       ELEMENTS
+    ========================= */
+
+    const startScreen =
+      document.getElementById("startScreen");
+
+    const ide =
+      document.getElementById("ide");
+
+    const explorer =
+      document.getElementById("explorer");
+
+    const editor =
+      document.getElementById("editor");
+
+    const lineNumbers =
+      document.getElementById("lineNumbers");
+
+    const output =
+      document.getElementById("output");
+
+    const tabs =
+      document.getElementById("tabs");
+
+    const aiPanel =
+      document.getElementById("aiPanel");
+
+    const timer =
+      document.getElementById("timer");
+
+    const toast =
+      document.getElementById("toast");
+
+    const outputPanel =
+      document.getElementById("outputPanel");
+
+    const terminalPanel =
+      document.getElementById("terminalPanel");
+
+    const problemsPanel =
+      document.getElementById("problemsPanel");
+
+    const tabOutput =
+      document.getElementById("tabOutput");
+
+    const tabTerminal =
+      document.getElementById("tabTerminal");
+
+    const tabProblems =
+      document.getElementById("tabProblems");
+
+    const terminalInput =
+      document.getElementById("terminalInput");
+
+    const terminalOutput =
+      document.getElementById("terminalOutput");
+
+    const mouseGlow =
+      document.getElementById("mouseGlow");
+
+    /* =========================
+       LANGUAGE
+    ========================= */
+
+    function setLanguage(lang) {
+      currentLanguage = lang;
+
+      document.documentElement.lang = lang;
+
+      document
+        .querySelectorAll("[data-i18n]")
+        .forEach((element) => {
+          const key = element.dataset.i18n;
+
+          if (
+            translations[lang] &&
+            translations[lang][key]
+          ) {
+            element.textContent =
+              translations[lang][key];
+          }
+        });
+
+      document
+        .querySelectorAll("[data-placeholder]")
+        .forEach((element) => {
+          const key =
+            element.dataset.placeholder;
+
+          if (
+            translations[lang] &&
+            translations[lang][key]
+          ) {
+            element.placeholder =
+              translations[lang][key];
+          }
+        });
+
+      document
+        .querySelectorAll(".lang-btn")
+        .forEach((button) => {
+          button.classList.remove("active");
+        });
+
+      const activeButton =
+        document.getElementById(
+          lang === "tg"
+            ? "langTG"
+            : lang === "ru"
+            ? "langRU"
+            : "langEN"
+        );
+
+      if (activeButton) {
+        activeButton.classList.add("active");
+      }
+
+      localStorage.setItem(
+        "codenova_language",
+        lang
+      );
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    function showToast(message) {
+      toast.textContent = message;
+
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    /* =========================
+       ESCAPE
+    ========================= */
+
+    function escapeHTML(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    /* =========================
+       OUTPUT
+    ========================= */
+
+    function log(message, type = "info") {
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "log-line log-" + type;
+
+      div.textContent =
+        "> " + message;
+
+      output.appendChild(div);
+
+      output.scrollTop =
+        output.scrollHeight;
+    }
+
+    function clearOutput() {
+      output.innerHTML = "";
+      log("Output cleared.", "info");
+    }
+
+    /* =========================
+       SHOW IDE
+    ========================= */
+
+    function showIDE() {
+      startScreen.style.display = "none";
+      ide.style.display = "flex";
+    }
+
+    /* =========================
+       OPEN PROJECT
+    ========================= */
+
+    async function openProjectFolder() {
+      try {
+        if (!window.showDirectoryPicker) {
+          showToast(
+            "Ин браузер File System API-ро дастгирӣ намекунад."
+          );
+          return;
+        }
+
+        projectHandle =
+          await window.showDirectoryPicker({
+            mode: "readwrite"
+          });
+
+        document.getElementById(
+          "projectName"
+        ).textContent =
+          projectHandle.name;
+
+        showIDE();
+
+        await refreshExplorer();
+
+        log(
+          "Project opened: " +
+          projectHandle.name,
+          "ok"
+        );
+
+      } catch (error) {
+        if (
+          error.name !== "AbortError"
+        ) {
+          log(
+            "Project opening failed: " +
+            error.message,
+            "error"
+          );
+        }
+      }
+    }
+
+    /* =========================
+       EXPLORER
+    ========================= */
+
+    async function refreshExplorer() {
+      if (!projectHandle) return;
+
+      explorer.innerHTML = "";
+
+      await renderDirectory(
+        projectHandle,
+        explorer,
+        0
+      );
+    }
+
+    async function renderDirectory(
+      directoryHandle,
+      container,
+      depth
+    ) {
+      const items = [];
+
+      for await (
+        const entry of directoryHandle.values()
+      ) {
+        items.push(entry);
+      }
+
+      items.sort((a, b) => {
+        if (a.kind !== b.kind) {
+          return a.kind === "directory"
+            ? -1
+            : 1;
+        }
+
+        return a.name.localeCompare(
+          b.name
+        );
+      });
+
+      for (
+        const entry of items
+      ) {
+        const row =
+          document.createElement("div");
+
+        row.className =
+          "tree-item " +
+          (
+            entry.kind === "file"
+              ? "file"
+              : "folder"
+          );
+
+        row.style.paddingLeft =
+          `${10 + depth * 16}px`;
+
+        const icon =
+          entry.kind === "directory"
+            ? "📁"
+            : getFileIcon(
+                entry.name
+              );
+
+        row.innerHTML = `
+          <span
+            class="icon-badge"
+            style="
+              width:29px;
+              height:29px;
+              font-size:14px;
+            "
+          >
+            ${icon}
+          </span>
+
+          <span>
+            ${escapeHTML(entry.name)}
+          </span>
+        `;
+
+        if (
+          entry.kind === "file"
+        ) {
+          row.onclick = () => {
+            openRealFile(
+              entry,
+              row
+            );
+          };
+        }
+
+        container.appendChild(row);
+      }
+    }
+
+    function getFileIcon(name) {
+      const ext =
+        name
+          .split(".")
+          .pop()
+          .toLowerCase();
+
+      const icons = {
+        html: "🌐",
+        css: "🎨",
+        js: "⚡",
+        json: "📦",
+        md: "📝",
+        txt: "📄",
+        py: "🐍",
+        java: "☕",
+        cpp: "⚙️",
+        ts: "🔷",
+        jsx: "⚛️",
+        tsx: "⚛️",
+        svg: "🖼️",
+        glb: "🧊",
+        png: "🖼️",
+        jpg: "🖼️"
+      };
+
+      return icons[ext] || "📄";
+    }
+
+    /* =========================
+       FILE
+    ========================= */
+
+    async function openRealFile(
+      fileHandle,
+      row
+    ) {
+      try {
+        currentFileHandle =
+          fileHandle;
+
+        const file =
+          await fileHandle.getFile();
+
+        editor.value =
+          await file.text();
+
+        updateLineNumbers();
+
+        document
+          .querySelectorAll(
+            ".tree-item.file"
+          )
+          .forEach((item) => {
+            item.classList.remove(
+              "active"
+            );
+          });
+
+        row.classList.add(
+          "active"
+        );
+
+        tabs.innerHTML = `
+          <div class="tab active">
+            ${getFileIcon(
+              fileHandle.name
+            )}
+            ${escapeHTML(
+              fileHandle.name
+            )}
+          </div>
+        `;
+
+        log(
+          "Opened " +
+          fileHandle.name,
+          "ok"
+        );
+
+        updateCursor();
+
+      } catch (error) {
+        log(
+          "Cannot open file: " +
+          error.message,
+          "error"
+        );
+      }
+    }
+
+    async function saveCurrentFile() {
+      if (!currentFileHandle) {
+        showToast(
+          currentLanguage === "tg"
+            ? "Аввал файлро интихоб кун."
+            : currentLanguage === "ru"
+            ? "Сначала выберите файл."
+            : "Select a file first."
+        );
+
+        return;
+      }
+
+      try {
+        const writable =
+          await currentFileHandle
+            .createWritable();
+
+        await writable.write(
+          editor.value
+        );
+
+        await writable.close();
+
+        log(
+          "Saved " +
+          currentFileHandle.name,
+          "ok"
+        );
+
+        showToast("✅ Saved");
+
+      } catch (error) {
+        log(
+          "Save failed: " +
+          error.message,
+          "error"
+        );
+      }
+    }
+
+    /* =========================
+       CREATE FILE
+    ========================= */
+
+    async function createNewFile() {
+      if (!projectHandle) {
+        showToast(
+          currentLanguage === "tg"
+            ? "Аввал project folder-ро кушо."
+            : currentLanguage === "ru"
+            ? "Сначала откройте папку проекта."
+            : "Open the project folder first."
+        );
+
+        return;
+      }
+
+      const name =
+        prompt(
+          currentLanguage === "tg"
+            ? "Номи файлро навис:"
+            : currentLanguage === "ru"
+            ? "Введите имя файла:"
+            : "Enter file name:"
+        );
+
+      if (!name) return;
+
+      try {
+        await projectHandle.getFileHandle(
+          name,
+          { create: true }
+        );
+
+        await refreshExplorer();
+
+        log(
+          "Created file: " + name,
+          "ok"
+        );
+
+      } catch (error) {
+        log(
+          "Create file failed: " +
+          error.message,
+          "error"
+        );
+      }
+    }
+
+    /* =========================
+       CREATE FOLDER
+    ========================= */
+
+    async function createNewFolder() {
+      if (!projectHandle) {
+        showToast(
+          currentLanguage === "tg"
+            ? "Аввал project folder-ро кушо."
+            : currentLanguage === "ru"
+            ? "Сначала откройте папку проекта."
+            : "Open the project folder first."
+        );
+
+        return;
+      }
+
+      const name =
+        prompt(
+          currentLanguage === "tg"
+            ? "Номи папкаро навис:"
+            : currentLanguage === "ru"
+            ? "Введите имя папки:"
+            : "Enter folder name:"
+        );
+
+      if (!name) return;
+
+      try {
+        await projectHandle.getDirectoryHandle(
+          name,
+          { create: true }
+        );
+
+        await refreshExplorer();
+
+        log(
+          "Created folder: " + name,
+          "ok"
+        );
+
+      } catch (error) {
+        log(
+          "Create folder failed: " +
+          error.message,
+          "error"
+        );
+      }
+    }
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    function filterFiles() {
+      const search =
+        document
+          .getElementById("searchInput")
+          .value
+          .toLowerCase()
+          .trim();
+
+      document
+        .querySelectorAll(".tree-item")
+        .forEach((item) => {
+          const text =
+            item.textContent.toLowerCase();
+
+          item.style.display =
+            !search ||
+            text.includes(search)
+              ? "flex"
+              : "none";
+        });
+    }
+
+    /* =========================
+       EDITOR
+    ========================= */
+
+    function updateLineNumbers() {
+      const lines =
+        editor.value.split("\n")
+          .length;
+
+      let html = "";
+
+      for (
+        let i = 1;
+        i <= lines;
+        i++
+      ) {
+        html += i + "\n";
+      }
+
+      lineNumbers.textContent =
+        html;
+
+      updateCursor();
+    }
+
+    function syncScroll() {
+      lineNumbers.scrollTop =
+        editor.scrollTop;
+    }
+
+    function updateCursor() {
+      const before =
+        editor.value.slice(
+          0,
+          editor.selectionStart
+        );
+
+      const lines =
+        before.split("\n");
+
+      const line =
+        lines.length;
+
+      const col =
+        lines[
+          lines.length - 1
+        ].length + 1;
+
+      document.getElementById(
+        "cursorInfo"
+      ).textContent =
+        `Ln ${line}, Col ${col}`;
+    }
+
+    editor.addEventListener(
+      "click",
+      updateCursor
+    );
+
+    editor.addEventListener(
+      "keyup",
+      updateCursor
+    );
+
+    function focusExplorer() {
+      document
+        .getElementById("searchInput")
+        .focus();
+    }
+
+    /* =========================
+       AI
+    ========================= */
+
+    function toggleAI() {
+      aiPanel.classList.toggle(
+        "open"
+      );
+
+      document
+        .getElementById("activityAI")
+        .classList.toggle(
+          "active"
+        );
+    }
+
+    function sendAI() {
+      openSubscription();
+    }
+
+    document
+      .getElementById("aiInput")
+      .addEventListener(
+        "keydown",
+        function (e) {
+          if (
+            e.key === "Enter" &&
+            !e.shiftKey
+          ) {
+            e.preventDefault();
+            sendAI();
+          }
+        }
+      );
+
+    /* =========================
+       BOTTOM TABS
+    ========================= */
+
+    function switchBottom(type) {
+      outputPanel.style.display = "none";
+      terminalPanel.style.display = "none";
+      problemsPanel.style.display = "none";
+
+      tabOutput.classList.remove("active");
+      tabTerminal.classList.remove("active");
+      tabProblems.classList.remove("active");
+
+      if (type === "output") {
+        outputPanel.style.display = "block";
+        tabOutput.classList.add("active");
+        return;
+      }
+
+      if (type === "terminal") {
+        terminalPanel.style.display = "block";
+        tabTerminal.classList.add("active");
+        terminalInput.focus();
+        return;
+      }
+
+      if (type === "problems") {
+        problemsPanel.style.display = "block";
+        tabProblems.classList.add("active");
+      }
+    }
+
+    /* =========================
+       TERMINAL
+    ========================= */
+
+    function terminalWrite(
+      text,
+      color = ""
+    ) {
+      const line =
+        document.createElement("div");
+
+      line.style.marginBottom =
+        "4px";
+
+      if (color) {
+        line.style.color = color;
+      }
+
+      line.textContent = text;
+
+      terminalOutput.appendChild(
+        line
+      );
+    }
+
+    terminalInput.addEventListener(
+      "keydown",
+      async function (e) {
+        if (e.key !== "Enter") {
+          return;
+        }
+
+        const command =
+          terminalInput.value.trim();
+
+        if (!command) return;
+
+        terminalWrite(
+          `CodeNova> ${command}`,
+          "#9eb0d8"
+        );
+
+        terminalInput.value = "";
+
+        if (
+          command.toLowerCase() ===
+          "clear"
+        ) {
+          terminalOutput.innerHTML = "";
+          return;
+        }
+
+        if (
+          command.toLowerCase() ===
+          "help"
+        ) {
+          terminalWrite(
+            "Commands: help, clear, pwd, ls, echo",
+            "#7eb5ff"
+          );
+          return;
+        }
+
+        if (
+          command.toLowerCase() ===
+          "pwd"
+        ) {
+          terminalWrite(
+            projectHandle
+              ? projectHandle.name
+              : "No project selected",
+            "#4ade80"
+          );
+          return;
+        }
+
+        if (
+          command.toLowerCase() ===
+          "ls"
+        ) {
+          await listTerminalFiles();
+          return;
+        }
+
+        if (
+          command
+            .toLowerCase()
+            .startsWith("echo ")
+        ) {
+          terminalWrite(
+            command.substring(5),
+            "#dbe5ff"
+          );
+          return;
+        }
+
+        terminalWrite(
+          `Unknown command: ${command}`,
+          "#ff7b7b"
+        );
+      }
+    );
+
+    async function listTerminalFiles() {
+      if (!projectHandle) {
+        terminalWrite(
+          "No project selected.",
+          "#ff7b7b"
+        );
+        return;
+      }
+
+      for await (
+        const entry of
+        projectHandle.values()
+      ) {
+        terminalWrite(
+          "  " + entry.name,
+          "#7eb5ff"
+        );
+      }
+    }
+
+    /* =========================
+       GITHUB
+    ========================= */
+
+    function showGithubModal() {
+      document.getElementById(
+        "modalTitle"
+      ).innerHTML =
+        `
+          <span class="icon-badge">🐙</span>
+          Clone GitHub
+        `;
+
+      document.getElementById(
+        "modalText"
+      ).textContent =
+        currentLanguage === "tg"
+          ? "GitHub repository маълумотро дохил кун."
+          : currentLanguage === "ru"
+          ? "Введите данные GitHub репозитория."
+          : "Enter GitHub repository information.";
+
+      document.getElementById(
+        "modalInput1"
+      ).style.display = "block";
+
+      document.getElementById(
+        "modalInput2"
+      ).style.display = "block";
+
+      document.getElementById(
+        "modalPrimary"
+      ).textContent = "🚀 Clone";
+
+      document.getElementById(
+        "modalPrimary"
+      ).onclick = connectGithub;
+
+      document.getElementById(
+        "modalBg"
+      ).classList.add("show");
+    }
+
+    function connectGithub() {
+      const owner =
+        document.getElementById(
+          "modalInput1"
+        ).value.trim();
+
+      const repo =
+        document.getElementById(
+          "modalInput2"
+        ).value.trim();
+
+      if (!owner || !repo) {
+        showToast(
+          currentLanguage === "tg"
+            ? "Owner ва Repository-ро навис."
+            : currentLanguage === "ru"
+            ? "Введите Owner и Repository."
+            : "Enter Owner and Repository."
+        );
+
+        return;
+      }
+
+      window.open(
+        `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+        "_blank"
+      );
+
+      closeModal();
+    }
+
+    /* =========================
+       SSH
+    ========================= */
+
+    function showSSHInfo() {
+      document.getElementById(
+        "modalTitle"
+      ).innerHTML =
+        `
+          <span class="icon-badge">🔐</span>
+          SSH
+        `;
+
+      document.getElementById(
+        "modalText"
+      ).textContent =
+        currentLanguage === "tg"
+          ? "SSH connection UI омода аст. Барои пайвасти воқеӣ backend лозим мешавад."
+          : currentLanguage === "ru"
+          ? "SSH интерфейс готов. Для настоящего подключения нужен backend."
+          : "SSH interface is ready. A backend is required for a real connection.";
+
+      document.getElementById(
+        "modalInput1"
+      ).style.display = "none";
+
+      document.getElementById(
+        "modalInput2"
+      ).style.display = "none";
+
+      document.getElementById(
+        "modalPrimary"
+      ).textContent = "✅ OK";
+
+      document.getElementById(
+        "modalPrimary"
+      ).onclick = closeModal;
+
+      document.getElementById(
+        "modalBg"
+      ).classList.add("show");
+    }
+
+    function closeModal() {
+      document.getElementById(
+        "modalBg"
+      ).classList.remove("show");
+
+      document.getElementById(
+        "modalInput1"
+      ).style.display = "block";
+
+      document.getElementById(
+        "modalInput2"
+      ).style.display = "block";
+    }
+
+    /* =========================
+       REGISTER
+    ========================= */
+
+    function openRegister() {
+      document.getElementById(
+        "registerBg"
+      ).classList.add("show");
+    }
+
+    function closeRegister() {
+      document.getElementById(
+        "registerBg"
+      ).classList.remove("show");
+    }
+
+    function createAccount() {
+      const name =
+        document.getElementById(
+          "registerName"
+        ).value.trim();
+
+      const email =
+        document.getElementById(
+          "registerEmail"
+        ).value.trim();
+
+      const password =
+        document.getElementById(
+          "registerPassword"
+        ).value;
+
+      if (
+        !name ||
+        !email ||
+        !password
+      ) {
+        showToast(
+          currentLanguage === "tg"
+            ? "Ҳамаи майдонҳоро пур кун."
+            : currentLanguage === "ru"
+            ? "Заполните все поля."
+            : "Fill in all fields."
+        );
+
+        return;
+      }
+
+      localStorage.setItem(
+        "codenova_user",
+        JSON.stringify({
+          name,
+          email
+        })
+      );
+
+      closeRegister();
+
+      showToast(
+        "✅ Account created"
+      );
+    }
+
+    /* =========================
+       SUBSCRIPTION
+    ========================= */
+
+    function openSubscription() {
+      document.getElementById(
+        "subscriptionBg"
+      ).classList.add("show");
+    }
+
+    function closeSubscription() {
+      document.getElementById(
+        "subscriptionBg"
+      ).classList.remove("show");
+    }
+
+    function selectPlan(
+      element,
+      name,
+      price
+    ) {
+      document
+        .querySelectorAll(".plan")
+        .forEach((plan) => {
+          plan.classList.remove(
+            "selected"
+          );
+        });
+
+      element.classList.add(
+        "selected"
+      );
+
+      selectedPlan = {
+        name,
+        price
+      };
+    }
+
+    function paySelectedPlan() {
+      if (!selectedPlan) {
+        showToast(
+          currentLanguage === "tg"
+            ? "Аввал як план интихоб кун."
+            : currentLanguage === "ru"
+            ? "Сначала выберите план."
+            : "Select a plan first."
+        );
+
+        return;
+      }
+
+      localStorage.setItem(
+        "codenova_subscription",
+        JSON.stringify(
+          selectedPlan
+        )
+      );
+
+      closeSubscription();
+
+      showToast(
+        `✅ ${selectedPlan.name} — ${selectedPlan.price}`
+      );
+    }
+
+    /* =========================
+       TIMER
+    ========================= */
+
+    function startTimer() {
+      const saved =
+        localStorage.getItem(
+          "codenova_trial_start"
+        );
+
+      let startTime;
+
+      if (saved) {
+        startTime = Number(saved);
+      } else {
+        startTime = Date.now();
+
+        localStorage.setItem(
+          "codenova_trial_start",
+          String(startTime)
+        );
+      }
+
+      function updateTimer() {
+        const elapsed =
+          Date.now() - startTime;
+
+        const total =
+          20 * 60 * 1000;
+
+        const remaining =
+          Math.max(
+            0,
+            total - elapsed
+          );
+
+        const minutes =
+          Math.floor(
+            remaining / 60000
+          );
+
+        const seconds =
+          Math.floor(
+            (remaining % 60000) /
+            1000
+          );
+
+        timer.textContent =
+          `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+        if (remaining <= 0) {
+          clearInterval(
+            timerInterval
+          );
+
+          openSubscription();
+
+          showToast(
+            "20 дақиқаи ройгон тамом шуд."
+          );
+        }
+      }
+
+      updateTimer();
+
+      clearInterval(
+        timerInterval
+      );
+
+      timerInterval =
+        setInterval(
+          updateTimer,
+          1000
+        );
+    }
+
+    /* =========================
+       MOUSE FOLLOW
+    ========================= */
+
+    document.addEventListener(
+      "mousemove",
+      function (e) {
+        mouseGlow.style.left =
+          e.clientX + "px";
+
+        mouseGlow.style.top =
+          e.clientY + "px";
+      }
+    );
+
+    /* =========================
+       START
+    ========================= */
+
+    window.addEventListener(
+      "load",
+      function () {
+
+        const savedLanguage =
+          localStorage.getItem(
+            "codenova_language"
+          );
+
+        if (savedLanguage) {
+          setLanguage(
+            savedLanguage
+          );
+        } else {
+          setLanguage("tg");
+        }
+
+        updateLineNumbers();
+
+        startTimer();
+
+        log(
+          "CodeNova started.",
+          "ok"
+        );
+      }
+    );
+  </script>
+
+</body>
+</html>
